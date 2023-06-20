@@ -1,0 +1,3 @@
+{
+    "typescript.tsdk": "contract-sdk/node_modules/typescript/lib"
+}

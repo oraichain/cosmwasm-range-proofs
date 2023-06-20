@@ -18,5 +18,7 @@ pub enum QueryMsg {
     VerifyProof {
         commitment: Binary,
         proof_raw: Binary,
+        /// unique
+        challenge: Binary,
     },
 }

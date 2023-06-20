@@ -16,3 +16,4 @@ agg_ver_data.log
 artifacts
 
 .DS_Store
+node_modules

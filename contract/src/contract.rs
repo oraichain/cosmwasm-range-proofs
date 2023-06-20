@@ -5,6 +5,7 @@ use cosmwasm_std::{
     to_binary, Addr, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdError, StdResult,
 };
 use curve25519_dalek::ristretto::CompressedRistretto;
+use curve25519_dalek::scalar::Scalar;
 use merlin::Transcript;
 
 use crate::error::ContractError;
@@ -69,25 +70,32 @@ pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
         QueryMsg::VerifyProof {
             commitment,
             proof_raw,
-        } => to_binary(&verify_proof(deps, &commitment, &proof_raw)?),
+            challenge,
+        } => to_binary(&verify_proof(deps, &commitment, &proof_raw, &challenge)?),
     }
 }
 
 #[allow(non_snake_case)]
-pub fn verify_proof(deps: Deps, commitment: &[u8], proof_raw: &[u8]) -> StdResult<bool> {
+pub fn verify_proof(
+    deps: Deps,
+    commitment: &[u8],
+    proof_raw: &[u8],
+    challenge: &[u8],
+) -> StdResult<bool> {
     let config = config_read(deps.storage)?;
     let pc_gens = PedersenGens::default();
     let bp_gens = BulletproofGens::new(64, 8);
-    let range_proof =
-        RangeProof::from_bytes(proof_raw).map_err(|err| StdError::generic_err(err.to_string()))?;
+    let range_proof = RangeProof::from_bytes(proof_raw)
+        .map_err(|_| StdError::generic_err("Range proof is not correct"))?;
     let value_commitment = CompressedRistretto::from_slice(commitment);
     let mut transcript = Transcript::new(TRANSCRIPT_BYTES);
     Ok(range_proof
-        .verify_single(
+        .verify_single_with_challenge(
             &bp_gens,
             &pc_gens,
             &mut transcript,
             &value_commitment,
+            &Scalar::hash_from_bytes::<sha3::Sha3_512>(challenge),
             config.n as usize,
         )
         .is_ok())
