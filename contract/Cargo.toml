@@ -1,0 +1,32 @@
+[package]
+name = "cosmwasm-bulletproofs"
+version = "0.1.0"
+authors = ["tupt <tu@orai.io>"]
+edition = "2021"
+
+exclude = [
+  # Those files are rust-optimizer artifacts. You might want to commit them for convenience but they should not be part of the source code publication.
+  "contract.wasm",
+  "hash.txt",
+]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+# for more explicit tests, cargo test --features=backtraces
+backtraces = ["cosmwasm-std/backtraces"]
+# use library feature to disable all instantiate/execute/query exports
+library = []
+
+[dependencies]
+cosmwasm-std = "1.2"
+cosmwasm-storage = "1.2"
+cosmwasm-schema = "1.2"
+thiserror = "1.0"
+
+bulletproofs = { path = "../bulletproofs" }
+merlin = { version = "2", default-features = false }
+curve25519-dalek = { version = "3.0.0", default-features = false, features = ["u64_backend",  "alloc"] }
+

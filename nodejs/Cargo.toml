@@ -1,0 +1,25 @@
+[package]
+name = "cosmwasm-bulletproofs-js"
+version = "0.0.1"
+authors = ["Thanh tu <tu@orai.io>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+node-bindgen = { version = "5.1.0" }
+curve25519-dalek = { version = "3.0.0", default-features = false, features = ["u64_backend",  "alloc"] }
+getrandom = { version = "0.2", features = ["js"] }
+rand_chacha = "0.2"
+bulletproofs = { path = "../bulletproofs" }
+merlin = { version = "2", default-features = false }
+
+[build-dependencies]
+node-bindgen = { version = "5.1.0", default-features = false, features = ["build"] }
+
+
+
+
+
+
